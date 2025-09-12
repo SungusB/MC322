@@ -1,7 +1,4 @@
-public class WyrnSword extends Arma
-{
-    public WyrnSword(int dano, int nivelMin)
-    {
-        super(10, 4);
-    }
+// Espada rara focada em dano bruto
+public class WyrnSword extends Arma {
+    public WyrnSword() { super("Wyrn Sword", 8, 2); }
 }

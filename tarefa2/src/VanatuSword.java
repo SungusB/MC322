@@ -1,7 +1,4 @@
-public class VanatuSword
-{
-    public VanatuSword(int dano, int nivelMin)
-    {
-        super(6, 3);
-    }
+// Lâmina balanceada com requisito moderado
+public class VanatuSword extends Arma {
+    public VanatuSword() { super("Vanatu Blade", 5, 1); }
 }

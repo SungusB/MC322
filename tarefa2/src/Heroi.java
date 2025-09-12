@@ -1,66 +1,67 @@
-/**
- * Classe abstrata Heroi, herda de Personagem.
- * Adiciona: nivel, experiencia; ganharExperiencia(); exibirStatus() override; usarHabilidadeEspecial() abstrato.
- */
+// Herói abstrato: sistema de nível, XP e sorte.
+
 public abstract class Heroi extends Personagem {
+
     protected int nivel;
-    protected int experiencia; // XP acumulado
-    protected Arma armaEquipada;
+    protected int experiencia;
+    protected int expProximoNivel;
+    protected double sorte; // 0..1
 
-    public Heroi(String nome, int pontosDeVida, int forca, int nivel) {
-        super(nome, pontosDeVida, forca);
+    protected Heroi(String nome, int hp, int forca, Arma arma, int nivel, double sorte) {
+        super(nome, hp, forca, arma);
         this.nivel = Math.max(1, nivel);
+        this.sorte = Math.min(1.0, Math.max(0.0, sorte));
         this.experiencia = 0;
-        this.armaEquipada = null;
+        this.expProximoNivel = 20; // base simples
     }
 
-    /** Ganha XP; sobe de nível a cada 100*nível XP*/
+    public int getNivel() {
+        return nivel;
+    }
+
+    public double getSorte() {
+        return sorte;
+    }
+
     public void ganharExperiencia(int xp) {
-        if (xp <= 0) return;
-        experiencia += xp;
-        System.out.printf("+++ %s ganhou %d XP (total: %d).%n", nome, xp, experiencia);
-
-        // Regra de level-up simples: sempre que XP >= 100*nivel, sobe e consome esse limiar.
-        while (experiencia >= 100 * nivel) {
-            experiencia -= 100 * nivel;
-            nivel++;
-            forca += 2;            // pequeno bônus
-            pontosDeVida += 10;    // pequeno bônus
-            System.out.printf("*** %s SUBIU para o nível %d! (+2 Força, +10 PV)%n", nome, nivel);
+        experiencia += Math.max(0, xp);
+        while (experiencia >= expProximoNivel) {
+            experiencia -= expProximoNivel;
+            subirDeNivel();
         }
     }
 
-    public void equiparArma(Arma arma)
-     {
-        if (arma == null) 
-        {
-            System.out.printf("%s largou a arma.%n", nome);
-            this.armaEquipada = null;
-            return;
-        }
-
-        if (nivel < arma.getMinNivel()) 
-        {
-            System.out.printf("!!! %s nivel insuficient para usar %s (requer nível %d).%n", nome, arma.getClass().getSimpleName(), arma.getMinNivel());
-            return;
-        }
-
-        this.armaEquipada = arma;
-        System.out.printf("%s equipou %s!%n", nome, arma);
+    private void subirDeNivel() {
+        nivel++;
+        // fortalecer atributos de forma crescente e simples
+        this.forca += 2;
+        this.pontosDeVida += 5;
+        // próxima meta de XP cresce 25%
+        this.expProximoNivel += Math.max(5, (int) Math.ceil(expProximoNivel * 0.25));
+        System.out.println(">>> " + nome + " subiu para o nível " + nivel + "! [+FOR, +HP]");
     }
 
-    public int getDanoTotal() 
-    {
-        int bonus = (armaEquipada != null) ? armaEquipada.getDano() : 0;
-        return forca + bonus;
+    public boolean equiparArma(Arma novaArma) {
+        if (novaArma == null) {
+            return false;
+        }
+
+        if (nivel >= novaArma.getMinNivel()) {
+            boolean melhor = (arma == null) || (novaArma.getDano() > arma.getDano());
+            this.arma = novaArma;
+            System.out.println(">>> " + nome + " equipou " + novaArma + (melhor ? " [UPGRADE]" : ""));
+            return true;
+        } else {
+            System.out.println("!!! " + nome + " não tem nível para equipar " + novaArma);
+            return false;
+        }
     }
 
     @Override
     public void exibirStatus() {
-        System.out.printf("[Herói ] %-12s | PV: %3d | Força: %2d | Nível: %2d | XP: %3d%n",
-                nome, pontosDeVida, forca, nivel, experiencia);
+        super.exibirStatus();
+        System.out.println("    Nv: " + nivel + " | XP: " + experiencia + "/" + expProximoNivel + " | Sorte: " + String.format("%.2f", sorte));
     }
 
-    /** Cada herói tem uma habilidade especial única. */
-    public abstract void usarHabilidadeEspecial(Personagem alvo);
+    public abstract void usarHabilidadeEspecial(Personagem alvo, java.util.Random rng);
 }

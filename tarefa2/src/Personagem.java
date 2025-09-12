@@ -1,46 +1,36 @@
-import java.util.concurrent.ThreadLocalRandom;
-
-/**
- * Classe abstrata base para qualquer entidade viva do jogo.
- * Atributos: nome, pontosDeVida, forca.
- * Métodos: receberDano(), exibirStatus(), estaVivo(), atacar() abstrato.
- */
+// Base abstrata para entidades vivas no jogo
 public abstract class Personagem {
-    protected String nome;
+    protected final String nome;
     protected int pontosDeVida;
     protected int forca;
+    protected Arma arma;
 
-    // Probabilidades globais (pode ajustar aqui)
-    protected static final double CHANCE_ERRO_PADRAO = 0.08;   // 8% miss
-    protected static final double CHANCE_CRIT_PADRAO = 0.15;   // 15% crítico
-    protected static final double CHANCE_CRIT_ESPECIAL = 0.25; // 25% crítico em especiais
-
-    public Personagem(String nome, int pontosDeVida, int forca) {
+    protected Personagem(String nome, int pontosDeVida, int forca, Arma arma) {
         this.nome = nome;
         this.pontosDeVida = Math.max(0, pontosDeVida);
         this.forca = Math.max(0, forca);
+        this.arma = arma;
     }
 
-    /** Reduz os pontos de vida, sem deixar negativo. */
+    public String getNome() { return nome; }
+    public int getPontosDeVida() { return pontosDeVida; }
+    public int getForca() { return forca; }
+    public Arma getArma() { return arma; }
+
+    public boolean estaVivo() { return pontosDeVida > 0; }
+
     public void receberDano(int dano) {
-        if (dano < 0) dano = 0;
-        this.pontosDeVida = Math.max(0, this.pontosDeVida - dano);
-        System.out.printf(">>> %s recebeu %d de dano. (PV: %d)%n", nome, dano, pontosDeVida);
+        int real = Math.max(0, dano);
+        pontosDeVida -= real;
+        if (pontosDeVida < 0) pontosDeVida = 0;
+        System.out.println("  " + nome + " recebeu " + real + " de dano. [HP=" + pontosDeVida + "]");
     }
 
     public void exibirStatus() {
-        System.out.printf("[Status] %-12s | PV: %3d | Força: %2d%n", nome, pontosDeVida, forca);
+        String armaDesc = (arma == null ? "Desarmado" : arma.toString());
+        System.out.println("[" + getClass().getSimpleName() + "] " + nome +
+            " | HP: " + pontosDeVida + " | FOR: " + forca + " | Arma: " + armaDesc);
     }
 
-    public boolean estaVivo() {
-        return pontosDeVida > 0;
-    }
-
-    /** Random helper: retorna true com probabilidade 'prob' (0..1). */
-    protected static boolean teste(double prob) {
-        return ThreadLocalRandom.current().nextDouble() < prob;
-    }
-
-    /** Contrato de ataque: cada subclasse define seu estilo. */
-    public abstract void atacar(Personagem alvo);
+    public abstract void atacar(Personagem alvo, java.util.Random rng);
 }

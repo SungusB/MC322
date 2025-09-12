@@ -1,100 +1,88 @@
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
-/**
- * Cenário de Sobrevivência
- * - Um herói enfrenta 3 encontros com monstros diferentes.
- * - Turno: herói ataca; se monstro vivo, contra-ataca.
- * - Aleatoriedade: atributos iniciais e variação de dano nos ataques.
- * - Pausa de 20 s entre turnos para leitura.
- */
 public class Main {
-    private static void cabecalho(String titulo) {
-        System.out.println();
-        System.out.println("===== " + titulo + " =====");
-    }
-
-    /** pause */
-    private static void dormirMs(long ms) {
-        try { Thread.sleep(ms); } catch (InterruptedException ignored) {}
-    }
-
     public static void main(String[] args) {
-        var rnd = ThreadLocalRandom.current();
+        Random rng = new Random(); 
+        System.out.println("==== DESAFIO DE SOBREVIVÊNCIA ====");
 
-        // Escolha um herói (use Guerreiro ou Arqueiro).
-        Heroi heroi = new Guerreiro(
-                "Arthus",
-                90 + rnd.nextInt(21),   // PV 90..110
-                12 + rnd.nextInt(6),    // Força 12..17
-                1,
-                8 + rnd.nextInt(5)      // Fúria 8..12
-        );
-        // Heroi heroi = new Arqueiro("Lyra",
-        //         85 + rnd.nextInt(21),   // 85..105
-        //         11 + rnd.nextInt(6),    // 11..16
-        //         1,
-        //         10 + rnd.nextInt(7));   // 10..16
-
-        // Três monstros com variações
-        Monstro[] encontros = new Monstro[]{
-                new Goblin("Goblin Velhaco",
-                        25 + rnd.nextInt(11), // 25..35
-                        6 + rnd.nextInt(5),   // 6..10
-                        40,
-                        4 + rnd.nextInt(5)),  // 4..8
-                new Esqueleto("Esqueleto Antigo",
-                        35 + rnd.nextInt(11), // 35..45
-                        8 + rnd.nextInt(5),   // 8..12
-                        50,
-                        7 + rnd.nextInt(4)),  // 7..10
-                new Orc("Orc Colossal",
-                        45 + rnd.nextInt(11), // 45..55
-                        10 + rnd.nextInt(5),  // 10..14
-                        75,
-                        12 + rnd.nextInt(6))  // 12..17
-        };
-
-        // Apresentação do desafio
-        cabecalho("O HERÓI ENTRA NA MASMORRA PARA ENFRENTAR TRÊS DESAFIOS!");
+        // Mude para Arqueiro se quiser
+        Heroi heroi = new Guerreiro("Ayla", new VanatuSword());
         heroi.exibirStatus();
 
-        for (int turno = 0; turno < 3; turno++) {
-            Monstro monstro = encontros[turno];
-            cabecalho(String.format("INÍCIO DO TURNO %d", turno + 1));
-            System.out.printf("Um %s aparece!%n", monstro.nome);
-            monstro.exibirStatus();
+        // Gerar fases com dificuldade crescente
+        List<Fase> fases = ConstrutorDeCenario.gerarFases(4, rng);
 
-            // Herói ataca primeiro
-            heroi.atacar(monstro);
-
-            // Se o monstro caiu, herói recebe XP e NÃO há contra-ataque
-            if (!monstro.estaVivo()) {
-                System.out.printf("%s foi derrotado!%n", monstro.nome);
-                heroi.ganharExperiencia(monstro.getXpConcedido());
-            } else {
-                // Monstro ainda vivo contra-ataca
-                monstro.atacar(heroi);
-            }
-
-            // Checa sobrevivência do herói
-            if (!heroi.estaVivo()) {
-                cabecalho("GAME OVER");
-                System.out.println("O herói tombou na masmorra...");
-                return;
-            }
-
-            // Status ao final do turno
-            cabecalho("FIM DO TURNO — STATUS ATUAL");
+        // Loop das fases
+        for (int idx = 0; idx < fases.size(); idx++) {
+            Fase fase = fases.get(idx);
+            System.out.println();
+            bannerAmbiente(fase.getAmbiente());
+            fase.exibirResumo();
             heroi.exibirStatus();
-            monstro.exibirStatus();
 
-            // Pausa de 20 segundos antes do próximo turno (para leitura)
-            dormirMs(20_000);
+            // enfrenta um monstro por vez
+            for (int i = 0; i < fase.getMonstros().size(); i++) {
+                Monstro m = fase.getMonstros().get(i);
+                System.out.println();
+                System.out.println(">>> Um " + m.getNome() + " surge no caminho!");
+                m.exibirStatus();
+
+                // combate enquanto ambos vivos
+                int turno = 1;
+                while (heroi.estaVivo() && m.estaVivo()) {
+                    System.out.println("--- TURNO " + (turno++) + " ---");
+                    // chance pequena de usar habilidade especial
+                    if (rng.nextDouble() < 0.25) {
+                        heroi.usarHabilidadeEspecial(m, rng);
+                    } else {
+                        heroi.atacar(m, rng);
+                    }
+                    if (!m.estaVivo()) break;
+
+                    m.atacar(heroi, rng);
+                }
+
+                // verificar resultado do combate
+                if (!heroi.estaVivo()) {
+                    System.out.println("\nXXX GAME OVER — " + heroi.getNome() + " tombou em batalha.");
+                    return;
+                }
+
+                System.out.println("*** " + m.getNome() + " foi derrotado! +" + m.getXpConcedido() + " XP.");
+                heroi.ganharExperiencia(m.getXpConcedido());
+
+                // Teste de sorte para drop de arma
+                double rolagem = rng.nextDouble();
+                boolean dropou = rolagem < heroi.getSorte();
+                if (dropou) {
+                    Arma drop = m.largaArma(rng);
+                    if (drop != null) {
+                        System.out.println("*** Sorte! O " + m.getNome() + " largou " + drop + ".");
+                        // equipar se for melhor e permitido
+                        if (heroi.getArma() == null || drop.getDano() > heroi.getArma().getDano()) {
+                            heroi.equiparArma(drop);
+                        } else {
+                            System.out.println("   " + heroi.getNome() + " mantém a arma atual.");
+                        }
+                    }
+                } else {
+                    System.out.println("*** Sem drops desta vez (rolagem " + String.format("%.2f", rolagem) + ").");
+                }
+            }
         }
 
-        // Conclusão
-        cabecalho("VITÓRIA!");
-        System.out.println("O herói sobreviveu aos três desafios e retorna triunfante!");
-        heroi.exibirStatus();
+        System.out.println("\n>>> VITÓRIA! " + ((Heroi)heroi).getNome() + " superou todas as fases!");
+    }
+
+    private static void bannerAmbiente(String ambiente) {
+        String msg = switch (ambiente) {
+            case "Catacumbas Umidas" -> "O herói desce às catacumbas úmidas, onde ecos antigos ressoam...";
+            case "Floresta de Névoa" -> "A névoa abraça a floresta; olhos brilham entre as árvores...";
+            case "Ruínas Ancestrais" -> "Sob colunas quebradas, segredos velhos aguardam...";
+            case "Desfiladeiro Helíaco" -> "O vento uiva nas fendas do desfiladeiro; passos precisam ser firmes...";
+            case "Cripta do Eclipse" -> "Sombras dançam com a luz do eclipse — a coragem será posta à prova.";
+            default -> "O herói adentra " + ambiente + "!";
+        };
+        System.out.println("=== " + msg + " ===");
     }
 }

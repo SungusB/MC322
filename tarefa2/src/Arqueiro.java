@@ -1,53 +1,35 @@
-import java.util.concurrent.ThreadLocalRandom;
-
-/** Arqueiro: herói concreto com atributo único 'precisao'. */
+// Arqueiro: foco em precisão. Chance de disparo duplo com base na sorte.
 public class Arqueiro extends Heroi {
-    private int precisao; // varia, não pode ser final
+    private final double precisao; // 0..1
 
-    public Arqueiro(String nome, int pv, int forca, int nivel, int precisao) {
-        super(nome, pv, forca, nivel);
-        this.precisao = Math.max(0, precisao);
+    public Arqueiro(String nome, Arma arma) {
+        super(nome, 32, 5, arma, 1, 0.35);
+        this.precisao = 0.75;
     }
 
     @Override
-    public void atacar(Personagem alvo) {
-        if (teste(CHANCE_ERRO_PADRAO)) {
-            System.out.printf("%s ERROU a flecha!%n", nome);
+    public void atacar(Personagem alvo, java.util.Random rng) {
+        if (!estaVivo()) return;
+        int base = this.forca + (arma != null ? arma.getDano() : 0);
+        boolean duplo = rng.nextDouble() < (this.sorte * this.precisao); // sorte influencia disparo extra
+        int vezes = duplo ? 2 : 1;
+        for (int i = 1; i <= vezes; i++) {
+            System.out.println(nome + " dispara uma flecha" + (duplo ? " #" + i : "") + "!");
+            alvo.receberDano((int)Math.round(base * (duplo ? 0.7 : 1.0))); // se duplo, cada um causa 70%
+        }
+    }
+
+    @Override
+    public void usarHabilidadeEspecial(Personagem alvo, java.util.Random rng) {
+        // "Tiro Preciso": dano alto com chance de errar reduzida pela sorte
+        boolean falha = rng.nextDouble() > (0.65 + 0.35 * this.sorte);
+        if (falha) {
+            System.out.println(nome + " errou o Tiro Preciso...");
             return;
         }
-        int variacao = ThreadLocalRandom.current().nextInt(0, 5); // 0..4
-        int danoBase = forca + (precisao / 4) + variacao;
-
-        boolean crit = teste(CHANCE_CRIT_PADRAO);
-        int dano = crit ? Math.max(1, (int)Math.round(danoBase * 1.5)) : danoBase;
-
-        System.out.printf("%s dispara uma flecha certeira%s! (Dano: %d)%n",
-                nome, crit ? " CRÍTICA" : "", dano);
+        int base = this.forca + (arma != null ? arma.getDano() : 0);
+        int dano = (int)Math.round(base * 1.8);
+        System.out.println(nome + " usa TIRO PRECISO!");
         alvo.receberDano(dano);
-        if (precisao > 0) precisao -= 1;
-    }
-
-    @Override
-    public void usarHabilidadeEspecial(Personagem alvo) {
-        if (teste(CHANCE_ERRO_PADRAO)) {
-            System.out.printf("%s ERROU a RAJADA DE FLECHAS!%n", nome);
-            return;
-        }
-        int variacao = ThreadLocalRandom.current().nextInt(4, 10); // 4..9
-        int danoBase = forca + 7 + (precisao / 2) + variacao;
-
-        boolean crit = teste(CHANCE_CRIT_ESPECIAL);
-        int dano = crit ? Math.max(1, (int)Math.round(danoBase * 1.5)) : danoBase;
-
-        System.out.printf("%s usa RAJADA DE FLECHAS%s! (Dano: %d)%n",
-                nome, crit ? " CRÍTICA" : "", dano);
-        alvo.receberDano(dano);
-        precisao = Math.max(0, precisao - 2);
-    }
-
-    @Override
-    public void exibirStatus() {
-        System.out.printf("[Arq. ] %-12s | PV: %3d | Força: %2d | Nível: %2d | XP: %3d | Precisão: %2d%n",
-                nome, pontosDeVida, forca, nivel, experiencia, precisao);
     }
 }

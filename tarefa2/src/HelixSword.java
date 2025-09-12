@@ -1,7 +1,4 @@
-public class HelixSword extends Arma
-{
-    public HelixSword(int dano, int nivelMin)
-    {
-        super(3, 2);
-    }
+// Arma de alto requisito com grande poder
+public class HelixSword extends Arma {
+    public HelixSword() { super("Helix Greatsword", 12, 4); }
 }

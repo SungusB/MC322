@@ -1,25 +1,27 @@
-public class Fase
-{
-    public int numFase;
-    public String nomeAmbiente;
-    protected Monstro[] monstros; 
+import java.util.ArrayList;
+import java.util.List;
 
-    public Fase(int numFase, String nomeAmbiente, Monstro monstros)
-    {
-        this.numFase = numFase;
-        this.nomeAmbiente = nomeAmbiente;
-        this.monstros = monstros;
+// Fase do jogo: define ambiente, nível e monstros.
+public class Fase {
+    private final int nivel;
+    private final String ambiente;
+    private final List<Monstro> monstros = new ArrayList<>();
+
+    public Fase(int nivel, String ambiente) {
+        this.nivel = nivel;
+        this.ambiente = ambiente;
     }
 
-    public int getnumFase() {return numFase;}
+    public int getNivel() { return nivel; }
+    public String getAmbiente() { return ambiente; }
+    public List<Monstro> getMonstros() { return monstros; }
 
-    public String getnomeAmbiente() {return nomeAmbiente;}
+    public void adicionarMonstro(Monstro m) {
+        if (m != null) monstros.add(m);
+    }
 
-    public Monstro getmonstros() {return monstros;}
-
-    public void setnumFase(int x) {this.numFase = x;}
-
-    public void setnomeAmbiente(String x) {this.nomeAmbiente = x;}
-
-    public void setmonstros(Monstro x) {this.monstros =x;}
+    public void exibirResumo() {
+        System.out.println("--- FASE Nível " + nivel + " — " + ambiente + " ---");
+        System.out.println("Monstros: " + monstros.size());
+    }
 }

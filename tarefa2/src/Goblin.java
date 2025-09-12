@@ -1,28 +1,18 @@
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
-/** Goblin: monstro concreto, ágil e traiçoeiro. */
 public class Goblin extends Monstro {
-    private final int malicia; // valor fixo após construir
-
-    public Goblin(String nome, int pv, int forca, int xp, int malicia) {
-        super(nome, pv, forca, xp);
-        this.malicia = Math.max(0, malicia);
+    public Goblin(int nivelFase) {
+        super("Goblin", 14 + 2 * nivelFase, 3 + nivelFase, null, 8 + 2 * nivelFase);
+        listaDeArmasParaLargar.add(new VanatuSword());
+        listaDeArmasParaLargar.add(new WyrnSword());
     }
 
     @Override
-    public void atacar(Personagem alvo) {
-        if (teste(CHANCE_ERRO_PADRAO)) {
-            System.out.printf("%s ERROU a adaga!%n", nome);
-            return;
-        }
-        int variacao = ThreadLocalRandom.current().nextInt(0, 4); // 0..3
-        int danoBase = forca + (malicia / 4) + variacao;
-
-        boolean crit = teste(CHANCE_CRIT_PADRAO);
-        int dano = crit ? Math.max(1, (int)Math.round(danoBase * 1.5)) : danoBase;
-
-        System.out.printf("%s ataca com adaga enferrujada%s! (Dano: %d)%n",
-                nome, crit ? " CRÍTICA" : "", dano);
+    public void atacar(Personagem alvo, Random rng) {
+        int base = this.forca + (arma != null ? arma.getDano() : 0);
+        boolean furtivo = rng.nextDouble() < 0.30;
+        int dano = furtivo ? (int)Math.round(base * 1.4) : base;
+        System.out.println(nome + " realiza um ataque furtivo" + (furtivo ? " [+40%]" : "") + "!");
         alvo.receberDano(dano);
     }
 }
