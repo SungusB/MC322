@@ -1,0 +1,5 @@
+# Ignora as classes
+*.class
+
+# Ignora pastas de compilação
+/bin/
