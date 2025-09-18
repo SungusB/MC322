@@ -45,7 +45,7 @@ public abstract class Personagem implements Combatente
         {
             this.vidaAtual = 0;
         }
-        System.out.println(this.nome " agora tem " this.vidaAtual + "/" + this.vidaMaxima + " de vida.");
+        System.out.println(this.nome + " agora tem " + this.vidaAtual + "/" + this.vidaMaxima + " de vida.");
     }
 
     @Override

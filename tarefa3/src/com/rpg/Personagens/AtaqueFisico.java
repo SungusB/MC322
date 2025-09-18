@@ -17,13 +17,13 @@ public class AtaqueFisico implements AcaoDeCombate
     public void executar(Combatente usuario, Combatente alvo)
     {
         int danoFinal =this.danoBase;
-        if (new.Random().nextInt(100) < 20)
+        if (new Random().nextInt(100) < 20)
         {
             danoFinal *= 2;
             System.out.println("CRITICO");
         }
         System.out.println(usuario.getNome() + " ataca " 
-        + alvo.getNome() + " causando " + danoFinal " de dano.");
+        + alvo.getNome() + " causando " + danoFinal + " de dano.");
 
         alvo.receberDano(danoFinal);
     }

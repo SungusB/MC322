@@ -8,9 +8,9 @@ public interface Combatente
 
     boolean estaVivo();
 
-    void receberDano();
+    void receberDano(int dano);
 
-    void receberCura();
+    void receberCura(int cura);
 
     AcaoDeCombate escolherAcao(Combatente alvo);
 }
