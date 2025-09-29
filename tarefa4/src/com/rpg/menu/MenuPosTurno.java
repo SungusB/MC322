@@ -28,8 +28,9 @@ public class MenuPosTurno {
             System.out.println("[1] Interagir com o Loot " + (lootDisponivel ? "" : "(nenhum disponível)"));
             System.out.println("[2] Ver Informações do Personagem");
             System.out.println("[3] Desistir do Jogo");
+            System.out.println("[4] Continuar a aventura");
 
-            int opcao = InputManager.lerInteiro("Escolha uma opção >", 1, 3);
+            int opcao = InputManager.lerInteiro("Escolha uma opção >", 1, 4);
 
             switch (opcao) {
                 case 1 -> {
@@ -40,19 +41,18 @@ public class MenuPosTurno {
                         }
 
                         int escolha = InputManager.lerInteiro(
-                            "Escolha o item para tentar equipar ou 0 para ignorar", 0, lootAtual.size()
+                                "Escolha o item para tentar equipar ou 0 para ignorar", 
+                                0, lootAtual.size()
                         );
 
                         if (escolha != 0) {
                             Item item = lootAtual.get(escolha - 1);
                             if (item instanceof Arma arma) {
-                                try 
-                                {
+                                try {
                                     heroi.equiparArma(arma);
                                     lootAtual.remove(item);
                                     if (lootAtual.isEmpty()) lootDisponivel = false;
-                                } 
-                                catch (NivelInsuficienteException e) {
+                                } catch (NivelInsuficienteException e) {
                                     System.out.println(e.getMessage());
                                 }
                             } else {
@@ -74,6 +74,10 @@ public class MenuPosTurno {
                     System.out.println("Você desistiu da aventura...");
                     continuar = false;
                     return continuar;
+                }
+
+                case 4 -> {
+                    return true;
                 }
             }
         }

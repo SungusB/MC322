@@ -15,7 +15,7 @@ public class AtaqueDeRaiva implements AcaoDeCombate
     @Override
     public void executar(Combatente usuario, Combatente alvo)
     {
-        int danoFinal = this.danoBase * 2;
+        int danoFinal = this.danoBase * 3;
         System.out.println(usuario.getNome() + " ficou enfurecido e desferiu um ataque letal em " + alvo.getNome() + " causando " + danoFinal + " de dano.");
         alvo.receberDano((danoFinal));
     }

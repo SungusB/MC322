@@ -71,8 +71,8 @@ public abstract class FaseDeCombate implements Fase {
                     System.out.println("Você encontrou loot:");
                     for (Item it : loot) System.out.println(" - " + it.getNome());
                 }
-                // menu pós-turno
                 MenuPosTurno menu = new MenuPosTurno();
+                menu.setLoot(loot);
                 boolean continuar = menu.exibir(heroi, !loot.isEmpty());
                 if (!continuar) return;
             }

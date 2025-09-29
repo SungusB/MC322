@@ -94,8 +94,8 @@ public class MenuPrincipal {
 
     private void mostrarInfoHerois() {
         System.out.println("\n=== CLASSES DE HERÓIS ===");
-        System.out.println("Hunter: Vida 1100, Dano 140, Velocidade 60, Defesa 40%. Habilidade: Ataque de Raiva (dano x2).");
-        System.out.println("Juggernaut: Vida 1500, Dano 100, Velocidade 20, Defesa 60%. Habilidade: Recuperar Fôlego (cura 350).");
+        System.out.println("Hunter: Vida 1500, Dano 180, Velocidade 60, Defesa 40%. Habilidade: Ataque de Raiva (dano x2).");
+        System.out.println("Juggernaut: Vida 1900, Dano 140, Velocidade 20, Defesa 60%. Habilidade: Recuperar Fôlego (cura 350).");
         InputManager.esperarEnter("Pressione ENTER para voltar ao menu...");
     }
 

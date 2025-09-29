@@ -12,7 +12,7 @@ public class Hunter extends Heroi
 {
     public Hunter()
     {
-        super("Hunter", 1100, 140, 60, 0.4);
+        super("Hunter", 1600, 280, 60, 0.4);
     }
 
     @Override

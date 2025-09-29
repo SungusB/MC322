@@ -12,7 +12,7 @@ public class Juggernaut extends Heroi {
 
     public Juggernaut() 
     {
-        super("Juggernaut", 1500, 100, 20, 0.6);
+        super("Juggernaut", 1900, 140, 30, 0.6);
     }
 
     @Override

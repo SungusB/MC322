@@ -14,7 +14,6 @@ public class ConstrutorDeCenarioFixo implements GeradorDeFases {
     public List<Fase> gerar(int quantidadeDeFases) {
         List<Fase> campanha = new ArrayList<>();
 
-        // Adiciona as fases concretas na ordem
         if (quantidadeDeFases >= 1) {
             campanha.add(new FaseSonho());
         }
