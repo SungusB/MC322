@@ -56,7 +56,7 @@ class InputManagerTest
      * Testa se o método {@code lerSimNao} retorna {@code true} quando o usuário digita 's'.
      */
     @Test
-    void testLerSimNao_sim() 
+    void testLerSim() 
     {
         provideInput("s\n");
         boolean resultado = InputManager.lerSimNao("Confirma?");
@@ -67,7 +67,7 @@ class InputManagerTest
      * Testa se o método {@code lerSimNao} retorna {@code false} quando o usuário digita 'n'.
      */
     @Test
-    void testLerSimNao_nao() 
+    void testLerNao() 
     {
         provideInput("n\n");
         boolean resultado = InputManager.lerSimNao("Confirma?");
@@ -76,7 +76,7 @@ class InputManagerTest
 
     /**
      * Testa se o método {@code lerSimNao} trata entradas inválidas
-     * e só retorna o resultadoado após receber uma entrada válida ('s' ou 'n').
+     * e só retorna o resultado após receber uma entrada válida ('s' ou 'n').
      */
     @Test
     void testLerSimNao_invalidoDepoisValido() 
