@@ -1,0 +1,16 @@
+com.rpg.cenario
+com.rpg.cenario.FasesConcretas
+com.rpg.combate
+com.rpg.exceptions
+com.rpg.game
+com.rpg.itens
+com.rpg.itens.ArmasConcretas
+com.rpg.menu
+com.rpg.personagens
+com.rpg.personagens.Herois
+com.rpg.personagens.Herois.HeroisConcretos.Hunter
+com.rpg.personagens.Herois.HeroisConcretos.Juggernault
+com.rpg.personagens.Monstros
+com.rpg.personagens.Monstros.MonstrosConcretos
+com.rpg.tests
+com.rpg.util
