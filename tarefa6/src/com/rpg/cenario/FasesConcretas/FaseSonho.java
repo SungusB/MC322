@@ -15,9 +15,10 @@ public class FaseSonho extends FaseDeCombate {
 
     public FaseSonho(boolean novoJogo) 
     {
-        super("O Sonho Febril",
+        super("O Sonho Febril !",
               TipoCenario.SONHO,
-              
+
+
               List.of(
                   new FogoFatuo(),
                   new FogoFatuo(),
